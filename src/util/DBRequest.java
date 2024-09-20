@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class DBRequest {
 	private static DBConnection dbInstance = DBConnection.getInstance();
@@ -28,12 +30,14 @@ public class DBRequest {
 		}
 	}
 
-	public static ResultSet getAll(String tableName, String condition, Object[] conditionValues) {
+	public static ResultSet getAll(String tableName, String condition, Object[] conditionValues,
+			boolean includeForeignKeys) {
 		String optional = condition.length() != 0 ? " WHERE " + condition : "";
 		String getAllQuery = "SELECT * FROM " + tableName + optional + ";";
 		ResultSet rs = null;
 
 		try {
+			// Fetch data from the main table
 			PreparedStatement pstmt = connection.prepareStatement(getAllQuery);
 			if (conditionValues != null) {
 				for (int i = 0; i < conditionValues.length; i++) {
@@ -41,6 +45,30 @@ public class DBRequest {
 				}
 			}
 			rs = pstmt.executeQuery();
+
+			// If foreign key data should be included
+			if (includeForeignKeys) {
+				List<String> foreignKeyTables = getForeignKeyTables(tableName);
+				if (!foreignKeyTables.isEmpty()) {
+					// Build the JOIN queries for foreign key tables
+					StringBuilder joinQuery = new StringBuilder("SELECT * FROM " + tableName);
+					for (String fkTable : foreignKeyTables) {
+						joinQuery.append(" LEFT JOIN ").append(fkTable).append(" ON ").append(tableName)
+								.append(".id = ").append(fkTable).append(".").append(tableName).append("_id");
+					}
+					joinQuery.append(" WHERE ").append(condition);
+
+					// Execute the join query
+					pstmt = connection.prepareStatement(joinQuery.toString());
+					if (conditionValues != null) {
+						for (int i = 0; i < conditionValues.length; i++) {
+							pstmt.setObject(i + 1, conditionValues[i]);
+						}
+					}
+					rs = pstmt.executeQuery();
+				}
+			}
+
 			return rs;
 
 		} catch (SQLException e) {
@@ -100,4 +128,25 @@ public class DBRequest {
 			e.printStackTrace();
 		}
 	}
+
+	private static List<String> getForeignKeyTables(String tableName) {
+		List<String> foreignKeyTables = new ArrayList<>();
+		String query = "SELECT DISTINCT tc.table_name " + "FROM information_schema.key_column_usage AS kcu "
+				+ "JOIN information_schema.table_constraints AS tc " + "ON kcu.constraint_name = tc.constraint_name "
+				+ "WHERE tc.constraint_type = 'FOREIGN KEY' " + "AND kcu.table_name = ?";
+
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, tableName);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					foreignKeyTables.add(rs.getString("table_name"));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return foreignKeyTables;
+	}
+
 }
