@@ -1,6 +1,7 @@
 package model;
 
 public class Client {
+	private int id;
 	private String name;
 	private String address;
 	private String phone;
@@ -41,5 +42,13 @@ public class Client {
 
 	public void setProfessional(boolean isProfessional) {
 		this.isProfessional = isProfessional;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }
