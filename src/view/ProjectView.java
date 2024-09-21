@@ -1,11 +1,15 @@
 package view;
 
+import controller.ProjectController;
 import model.Project;
 import util.Input;
 
 public class ProjectView {
 	public static void displayProjectCreationForm() {
-		System.out.println("=== Create New Renovation/Construction Project ===");
+		System.out.println("--- Client search ---");
+		System.out.println();
+		ProjectController pController = new ProjectController();
+		pController.createProject();
 
 		Input.getInteger("return", "Enter anything to back home", true);
 	}
