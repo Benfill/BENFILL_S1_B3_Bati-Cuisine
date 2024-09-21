@@ -29,6 +29,18 @@ public class Input {
 		}
 	}
 
+	public static Boolean getConfirmation(String message) {
+		String confirmation = getString("Confirmation", message, false).get();
+
+		while (!confirmation.equalsIgnoreCase("y") && !confirmation.equalsIgnoreCase("n")) {
+			confirmation = getString("Confirmation", "Please Enter y or n", false).get();
+		}
+		if (confirmation.equalsIgnoreCase("y"))
+			return true;
+		else
+			return false;
+	}
+
 	public static Optional<Double> getDouble(String label, String textToPrint, boolean optional) {
 		while (true) {
 			System.out.print(textToPrint + ": ");

@@ -17,11 +17,11 @@ public class ProjectController {
 	public void createProject() {
 		ClientController clientController = new ClientController();
 		ComponentController componentController = new ComponentController();
-		String validator = "";
+		Boolean validator = false;
 		Client client = null;
 		Project project = null;
 
-		while (!validator.equalsIgnoreCase("y") || client == null) {
+		while (!validator || client == null) {
 
 			int choice = ClientView.showClientMenu();
 
@@ -35,8 +35,7 @@ public class ProjectController {
 				continue;
 			}
 			ClientView.displayClientDetails(client);
-			validator = Input.getString("validation", "Would you like to continue with this client? (y/n)", false)
-					.get();
+			validator = Input.getConfirmation("Would you like to continue with this client? (y/n)");
 		}
 
 		System.out.println("--- Creation of a New Project ---");
@@ -44,18 +43,18 @@ public class ProjectController {
 
 		project = insertProject(client.getName());
 
-		validator = "y";
+		validator = true;
 
-		while (validator.equalsIgnoreCase("y")) {
+		while (validator) {
 			componentController.addComponentToProject(project.getId(), "material");
-			validator = Input.getString("validation", "Do you want to add another material? (y/n)", false).get();
+			validator = Input.getConfirmation("Do you want to add another material? (y/n)");
 		}
 
-		validator = "y";
+		validator = true;
 
-		while (validator.equalsIgnoreCase("y")) {
+		while (validator) {
 			componentController.addComponentToProject(project.getId(), "labor");
-			validator = Input.getString("validation", "Do you want to add another type of labor? (y/n)", false).get();
+			validator = Input.getConfirmation("Do you want to add another type of labor? (y/n)");
 		}
 
 	}
