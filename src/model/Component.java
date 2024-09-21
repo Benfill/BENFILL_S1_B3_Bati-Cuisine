@@ -1,13 +1,12 @@
 package model;
 
-import model.enums.ComponentType;
-
 public class Component {
 	private String name;
 	private double unitCost;
 	private double quantity;
-	private ComponentType type;
+	private String type;
 	private double taxRate;
+	private int projectId;
 
 	public double calculateCost() {
 		// Method body to be implemented
@@ -38,11 +37,11 @@ public class Component {
 		this.quantity = quantity;
 	}
 
-	public ComponentType getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(ComponentType type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
@@ -52,5 +51,13 @@ public class Component {
 
 	public void setTaxRate(double taxRate) {
 		this.taxRate = taxRate;
+	}
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
 	}
 }
