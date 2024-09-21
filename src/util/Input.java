@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Input {
-	public static Scanner scanner = new Scanner(System.in);
+	private static Scanner scanner = new Scanner(System.in);
 
 	public static Optional<Integer> getInteger(String label, String textToPrint, boolean optional) {
 		while (true) {
@@ -21,6 +21,25 @@ public class Input {
 
 			try {
 				return Optional.of(Integer.parseInt(userInput));
+			} catch (NumberFormatException e) {
+				if (!optional) {
+					System.out.println(label + " cannot be empty and must be an integer. Please try again.");
+				}
+			}
+		}
+	}
+
+	public static Optional<Double> getDouble(String label, String textToPrint, boolean optional) {
+		while (true) {
+			System.out.print(textToPrint + ": ");
+			String userInput = scanner.nextLine().trim();
+
+			if (optional && userInput.isEmpty()) {
+				return Optional.empty();
+			}
+
+			try {
+				return Optional.of(Double.parseDouble(userInput));
 			} catch (NumberFormatException e) {
 				if (!optional) {
 					System.out.println(label + " cannot be empty and must be an integer. Please try again.");
