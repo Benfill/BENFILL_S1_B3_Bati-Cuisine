@@ -5,7 +5,6 @@ import util.Input;
 
 public class ClientView {
 	public static int showClientMenu() {
-		System.out.println("--- Client Management ---");
 		System.out.println("1. Search for an existing client");
 		System.out.println("2. Add a new client");
 		return Input.getInteger("Client Management Choice", "Choose an option: ", false).get();
