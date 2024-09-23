@@ -73,7 +73,7 @@ public class Input {
 		}
 	}
 
-	public static Optional<LocalDate> getDate(String label, String textToPrint, boolean optional) {
+	public static Optional<LocalDate> getDate(String label, String textToPrint, boolean optional, boolean beforeToday) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		while (true) {
@@ -86,11 +86,13 @@ public class Input {
 
 			try {
 				LocalDate date = LocalDate.parse(input, formatter);
-				if (!date.isBefore(LocalDate.now())) {
-					System.out.println("The date cannot be today or in the future. Please try again.");
-				} else {
+				if (date.isAfter(LocalDate.now()) && beforeToday)
+					System.out.println("The date cannot be in the future. Please try again.");
+				if (date.isBefore(LocalDate.now()) && !beforeToday)
+					System.out.println("The date cannot be today or in the past. Please try again.");
+				else
 					return Optional.of(date);
-				}
+
 			} catch (DateTimeParseException e) {
 				System.out.println("Invalid date format. Please enter the date in 'yyyy-MM-dd' format.");
 			}
