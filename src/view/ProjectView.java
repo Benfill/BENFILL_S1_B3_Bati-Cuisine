@@ -1,7 +1,10 @@
 package view;
 
+import java.util.HashMap;
+
 import controller.ProjectController;
-import model.Project;
+import model.Quote;
+import service.ProjectService;
 import util.Input;
 
 public class ProjectView {
@@ -14,20 +17,33 @@ public class ProjectView {
 		Input.getInteger("return", "Enter anything to back home", true);
 	}
 
-	public static void displayProjectDetails(Project project) {
-		System.out.println("=== Project Details ===");
-		System.out.println("Project Name: " + project.getProjectName());
-		System.out.println("Total Cost: " + String.format("%.2f", project.getTotalCost()) + "MAD");
-		System.out.println("Project Name: " + project.getProjectName());
-	}
-
 	public static void displayAllProject() {
-		System.out.println("Projects");
+		ProjectController pController = new ProjectController();
+
+		pController.displayProjects();
 		Input.getInteger("return", "Enter anything to back home", true);
 	}
 
 	public static void deleteProject() {
-		System.out.println("Delete Project");
+		ProjectController pController = new ProjectController();
+		pController.deleteProject();
 		Input.getInteger("return", "Enter anything to back home", true);
+	}
+
+	public static void displayQuotes() {
+		ProjectService pService = new ProjectService();
+		HashMap<Integer, Quote> quotes = pService.getQuotes();
+		if (quotes == null) {
+			System.out.println("There is no quote yet");
+			return;
+		}
+
+		System.out.println();
+		System.out.println("-- Quotes --");
+		System.out.println();
+		quotes.forEach((id, quote) -> {
+			quote.displayQuote();
+		});
+		System.out.println();
 	}
 }

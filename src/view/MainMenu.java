@@ -17,7 +17,8 @@ public class MainMenu {
 		System.out.println("1. Create a new project");
 		System.out.println("2. View projects");
 		System.out.println("3. Delete a project");
-		System.out.println("4. Return to main menu");
+		System.out.println("4. View quotes");
+		System.out.println("5. Return to main menu");
 		System.out.print("Choose an option: ");
 		return Input.getInteger("Projects Menu", "Enter your choice", false).get();
 	}
