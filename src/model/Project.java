@@ -79,4 +79,47 @@ public class Project {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public void displayProject() {
+		String name = projectName.length() > 30 ? projectName.substring(0, 27) + "..." : projectName;
+		String[][] data = {
+				{ String.valueOf(id), name, String.format("%.2f", profitMargin), String.format("%.2f", totalCost),
+						status.toString(), String.valueOf(clientId), String.format("%.2f", surface) } };
+		int[] columnWidths = { 5, 30, 15, 15, 20, 10, 10 };
+
+		// Print data rows
+		for (String[] row : data) {
+			for (int i = 0; i < row.length; i++) {
+				System.out.printf("%-" + columnWidths[i] + "s", row[i]);
+			}
+			System.out.println();
+		}
+
+		// Print separator
+		for (int width : columnWidths) {
+			System.out.print("-".repeat(width));
+		}
+		System.out.println();
+
+	}
+
+	public void displayHeader() {
+		String[] headers = { "ID", "Project Name", "Profit Margin", "Total Cost", "Status", "Client ID", "Surface" };
+
+		// Define column widths
+		int[] columnWidths = { 5, 30, 15, 15, 20, 10, 10 };
+
+		// Print headers
+		for (int i = 0; i < headers.length; i++) {
+			System.out.printf("%-" + columnWidths[i] + "s", headers[i]);
+		}
+		System.out.println();
+
+		// Print separator
+		for (int width : columnWidths) {
+			System.out.print("-".repeat(width));
+		}
+		System.out.println();
+	}
+
 }
