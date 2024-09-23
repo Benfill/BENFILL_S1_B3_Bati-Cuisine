@@ -1,6 +1,6 @@
 package app;
 
-import service.AppService;
+import controller.AppController;
 import util.TableCreation;
 
 public class Main {
@@ -11,6 +11,6 @@ public class Main {
 
 	public static void startApp() {
 		new TableCreation();
-		new AppService();
+		new AppController();
 	}
 }
