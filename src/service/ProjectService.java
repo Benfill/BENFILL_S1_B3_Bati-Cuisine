@@ -49,13 +49,14 @@ public class ProjectService implements ProjectDAO {
 	public String acceptQuote(int projectId) {
 		LocalDate date = LocalDate.now();
 		Object[] value = { projectId, date };
-		ResultSet rSet = DBRequest.getAll("quotes", "project_id=? AND validity_date <= ?", value, false);
+		ResultSet rSet = DBRequest.getAll("quotes", "id=? AND validity_date >= ?", value, false);
 
 		if (!DBRequest.hasResults(rSet))
-			return "No results found for the given project ID, or the validity date has passed.";
+			return "No results found for the given quote ID, or the validity date has passed.";
 
 		try {
-			rSet.next();
+			if (rSet.getBoolean("accepted") == true)
+				return "Quote has already been accepted.";
 			DBRequest.update("quotes", rSet.getInt("id"), "accepted", new Object[] { true });
 		} catch (SQLException e) {
 			logger.error("error: " + e);

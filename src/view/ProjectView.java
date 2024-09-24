@@ -45,5 +45,18 @@ public class ProjectView {
 			quote.displayQuote();
 		});
 		System.out.println();
+		System.out.println("1. Accept quote");
+		System.out.println("2. Return back");
+		int choice = Input.getInteger("Quote Menu", "Enter your choice", false).get();
+		System.out.println();
+		if (choice == 2)
+			return;
+
+		Quote quote = new Quote();
+		quote.acceptQuote();
+
+		Input.getInteger("return", "Enter anything to back home", true);
+		System.out.println();
+
 	}
 }
