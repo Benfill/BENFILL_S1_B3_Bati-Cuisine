@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,6 +181,12 @@ public class ProjectController {
 		System.out.println();
 		System.out.println("Calculation of the cost in progress...");
 		System.out.println();
+
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			logger.error("error: " + e);
+		}
 
 		System.out.println("--- Résultat du Calcul ---");
 		System.out.println();
