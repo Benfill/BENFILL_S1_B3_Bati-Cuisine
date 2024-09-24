@@ -11,4 +11,6 @@ public interface ClientDAO {
 	public Client searchForClient(String name);;
 
 	public HashMap<Integer, Client> getClient();
+
+	Client getClient(int id);
 }

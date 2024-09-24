@@ -25,6 +25,9 @@ public class AppController {
 				choice = ClientView.displayAllClient();
 				break;
 			case 3:
+				choice = new ProjectController().calculateProject();
+				break;
+			case 4:
 				running = false;
 				System.out.println("Exiting the application...");
 				break;

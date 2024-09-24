@@ -12,6 +12,7 @@ import model.Project;
 import model.Quote;
 import model.enums.ProjectStatus;
 import service.ClientService;
+import service.ComponentService;
 import service.ProjectService;
 import util.Input;
 import view.ClientView;
@@ -22,8 +23,6 @@ import view.ProjectView;
 
 public class ProjectController {
 	private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
-	private HashMap<String, Material> materials = new HashMap<String, Material>();
-	private HashMap<String, Labor> labors = new HashMap<String, Labor>();
 	private Project project = null;
 	private Client client = null;
 	private double materialCost = 0;
@@ -31,6 +30,8 @@ public class ProjectController {
 	private double totalCost = 0;
 
 	public void createProject() {
+		HashMap<String, Material> materials = new HashMap<String, Material>();
+		HashMap<String, Labor> labors = new HashMap<String, Labor>();
 		ClientController clientController = new ClientController();
 		ComponentController componentController = new ComponentController();
 		Boolean validator = false;
@@ -73,7 +74,7 @@ public class ProjectController {
 			validator = Input.getConfirmation("Do you want to add another type of labor? (y/n)");
 		}
 
-		calculate();
+		calculate(materials, labors);
 		updateProject(project);
 
 	}
@@ -126,7 +127,7 @@ public class ProjectController {
 		System.out.println(project.getProjectName() + " Has been deleted successfully");
 	}
 
-	private void calculate() {
+	private void calculate(HashMap<String, Material> materials, HashMap<String, Labor> labors) {
 		System.out.println();
 		System.out.println("--- Total cost calculation ---");
 		System.out.println();
@@ -160,7 +161,7 @@ public class ProjectController {
 		double marginCost = 0;
 
 		costExcludingMargin = laborCost + materialCost;
-		marginCost = margin > 0 ? costExcludingMargin * (margin / 100) : costExcludingMargin;
+		marginCost = margin > 0 ? costExcludingMargin * (margin / 100) : 0;
 		totalCost = marginCost + costExcludingMargin;
 
 		CostCalculationView.displayFinalCost(costExcludingMargin, margin, totalCost, marginCost);
@@ -168,7 +169,11 @@ public class ProjectController {
 		project.setProfitMargin(marginCost);
 		project.setTotalCost(totalCost);
 
-		new Quote().generate(project.getId(), totalCost);
+		boolean status = new Quote().generate(project.getId(), totalCost);
+		if (status)
+			project.setStatus(ProjectStatus.Completed);
+		else
+			project.setStatus(ProjectStatus.Canceled);
 	}
 
 	private void displayText() {
@@ -195,7 +200,8 @@ public class ProjectController {
 			while (taxRate < 0 || taxRate > 100) {
 				taxRate = Input.getDouble("Vat Rate", "Please enter a valid VAT percentage (0-100)", false).get();
 			}
-		}
+		} else
+			taxRate = 0;
 
 		return taxRate;
 
@@ -210,8 +216,42 @@ public class ProjectController {
 				margin = Input
 						.getDouble("Profit Margin", "Please enter a valid profit margin percentage (0-100)", false)
 						.get();
-		}
+		} else
+			margin = 0;
 		return margin;
+	}
+
+	public int calculateProject() {
+		boolean checker = true;
+		while (checker) {
+
+			int id = Input.getInteger("Project id", "Enter the project id", false).get();
+			project = new ProjectService().getProjectById(id);
+
+			if (project == null) {
+				checker = Input.getConfirmation("There is no project with this Id. Do you want to try again (y/n)");
+				if (checker == false) {
+					Input.getInteger("return", "Enter anything to back home", true);
+					return 0;
+				}
+			} else
+				break;
+		}
+
+		client = new ClientService().getClient(project.getClientId());
+
+		HashMap<String, Material> materials = new ComponentService().getMaterials(project.getId());
+		HashMap<String, Labor> labors = new ComponentService().getLabors(project.getId());
+
+		if (materials == null || labors == null)
+			System.out.println("Something went wrong");
+
+		calculate(materials, labors);
+		updateProject(project);
+
+		Input.getInteger("return", "Enter anything to back home", true);
+
+		return 0;
 	}
 
 	public void displayProjects() {

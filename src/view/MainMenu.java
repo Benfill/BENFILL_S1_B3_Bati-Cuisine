@@ -7,7 +7,8 @@ public class MainMenu {
 		System.out.println("=== Welcome to BatiCuisine Project Management ===");
 		System.out.println("1. Manage Projects");
 		System.out.println("2. View Clients");
-		System.out.println("3. Exit");
+		System.out.println("3. Calculate the cost of a project");
+		System.out.println("4. Exit");
 		System.out.print("Choose an option: ");
 		return Input.getInteger("Main Menu", "Enter your choice", false).get();
 	}

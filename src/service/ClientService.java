@@ -43,6 +43,26 @@ public class ClientService implements ClientDAO {
 	}
 
 	@Override
+	public Client getClient(int id) {
+		Object[] values = { id };
+		ResultSet rSet = DBRequest.getAll("clients", "id=?", values, false);
+		Client client = new Client();
+		if (DBRequest.hasResults(rSet)) {
+			try {
+				client.setId(rSet.getInt("id"));
+				client.setName(rSet.getString("name"));
+				client.setAddress(rSet.getString("address"));
+				client.setPhone(rSet.getString("phone"));
+				client.setProfessional(rSet.getBoolean("isProfessional"));
+				return client;
+			} catch (SQLException e) {
+				logger.error("error: " + e);
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public HashMap<Integer, Client> getClient() {
 		ResultSet rSet = DBRequest.getAll("clients", "", null, false);
 		if (!DBRequest.hasResults(rSet))

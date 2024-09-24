@@ -13,7 +13,7 @@ public class Quote {
 	private int projectId;
 	private boolean accepted = false;
 
-	public void generate(int projectId, double estimatedAmount) {
+	public boolean generate(int projectId, double estimatedAmount) {
 		System.out.println();
 		System.out.println("--- Saving the Quote ---");
 		System.out.println();
@@ -28,11 +28,13 @@ public class Quote {
 
 		ProjectService pService = new ProjectService();
 		boolean checker = Input.getConfirmation("Would you like to save the quote? (y/n)");
-		if (!checker)
+		if (!checker) {
 			System.out.println("The quote has been canceled");
-		else {
+			return false;
+		} else {
 			pService.generateQuote(this);
 			System.out.println("The quote has been saved successfully");
+			return true;
 		}
 	}
 
