@@ -1,6 +1,9 @@
 package view;
 
+import java.util.HashMap;
+
 import model.Client;
+import service.ClientService;
 import util.Input;
 
 public class ClientView {
@@ -18,8 +21,29 @@ public class ClientView {
 		System.out.println("Professional: " + (client.isProfessional() ? "Yes" : "No"));
 	}
 
+	private static void displayHeader() {
+		System.out.printf("%-10s %-20s %-30s %-15s %-15s\n", "ID", "Name", "Address", "Phone", "Professional");
+		System.out
+				.println("-------------------------------------------------------------------------------------------");
+
+	}
+
 	public static int displayAllClient() {
+		ClientService cService = new ClientService();
+		HashMap<Integer, Client> clients = cService.getClient();
+
+		if (clients == null) {
+			System.out.println("There is no data yet");
+			Input.getInteger("return", "Enter anything to back home", true);
+			return 0;
+		}
+
+		displayHeader();
+		clients.forEach((id, client) -> {
+			client.displayClient();
+		});
 		Input.getInteger("return", "Enter anything to back home", true);
+		System.out.println();
 		return 0;
 	}
 }

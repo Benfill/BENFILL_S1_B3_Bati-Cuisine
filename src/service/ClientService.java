@@ -2,6 +2,7 @@ package service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,36 @@ public class ClientService implements ClientDAO {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public HashMap<Integer, Client> getClient() {
+		ResultSet rSet = DBRequest.getAll("clients", "", null, false);
+		if (!DBRequest.hasResults(rSet))
+			return null;
+
+		HashMap<Integer, Client> clients = new HashMap<Integer, Client>();
+		boolean checker = true;
+		Client client;
+
+		while (checker) {
+			try {
+				client = new Client();
+				int id = rSet.getInt("id");
+				client.setId(id);
+				client.setName(rSet.getString("name"));
+				client.setAddress(rSet.getString("address"));
+				client.setPhone(rSet.getString("phone"));
+				client.setProfessional(rSet.getBoolean("isProfessional"));
+				clients.put(id, client);
+				checker = rSet.next();
+			} catch (SQLException e) {
+				logger.error("error: " + e);
+				return null;
+			}
+		}
+
+		return clients;
 	}
 
 }

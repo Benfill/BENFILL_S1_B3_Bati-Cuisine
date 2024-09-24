@@ -12,6 +12,14 @@ public class Client {
 		return 0.0;
 	}
 
+	public void displayClient() {
+		System.out.printf("%-10d %-20s %-30s %-15s %-15s\n", this.id, this.name, this.address, this.phone,
+				this.isProfessional ? "Yes" : "No");
+		System.out
+				.println("-------------------------------------------------------------------------------------------");
+
+	}
+
 	public String getName() {
 		return name;
 	}
