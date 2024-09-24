@@ -3,6 +3,8 @@ package view;
 import java.util.HashMap;
 
 import controller.ProjectController;
+import model.Client;
+import model.Project;
 import model.Quote;
 import service.ProjectService;
 import util.Input;
@@ -15,6 +17,13 @@ public class ProjectView {
 		pController.createProject();
 
 		Input.getInteger("return", "Enter anything to back home", true);
+	}
+
+	public static void displayDetails(Project project, Client client) {
+		System.out.println("Project Name: " + project.getProjectName());
+		System.out.println("Client: " + client.getName());
+		System.out.println("Site address: " + client.getAddress());
+		System.out.println("Surface :" + project.getSurface());
 	}
 
 	public static void displayAllProject() {

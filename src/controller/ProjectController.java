@@ -15,6 +15,10 @@ import service.ClientService;
 import service.ProjectService;
 import util.Input;
 import view.ClientView;
+import view.CostCalculationView;
+import view.LaborView;
+import view.MaterialView;
+import view.ProjectView;
 
 public class ProjectController {
 	private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
@@ -127,58 +131,13 @@ public class ProjectController {
 		System.out.println("--- Total cost calculation ---");
 		System.out.println();
 
-		double taxRate = -1;
-		double margin = -1;
+		double taxRate = getTax();
+		double margin = getMargin();
 
-		double costExcludingMargin = 0;
-		double marginCost = 0;
+		displayText();
 
-		boolean validator = Input.getConfirmation("Do you want to apply VAT to the project? (y/n)");
-		if (validator) {
-			taxRate = Input.getDouble("Vat Rate", "Enter the VAT percentage (%)", false).get();
-			while (taxRate < 0 || taxRate > 100) {
-				taxRate = Input.getDouble("Vat Rate", "Please enter a valid VAT percentage (0-100)", false).get();
-			}
-		}
+		materialCost = MaterialView.displayMaterial(materials);
 
-		validator = Input.getConfirmation("Would you like to apply a profit margin to the project? (y/n)");
-		if (validator) {
-			margin = Input.getDouble("Profit Margin", "Enter the profit margin percentage (%)", false).get();
-			while (margin < 0 || margin > 100)
-				margin = Input
-						.getDouble("Profit Margin", "Please enter a valid profit margin percentage (0-100)", false)
-						.get();
-		}
-
-		System.out.println();
-		System.out.println("Calculation of the cost in progress...");
-		System.out.println();
-
-		System.out.println("--- Résultat du Calcul ---");
-		System.out.println();
-
-		System.out.println("Project Name: " + project.getProjectName());
-		System.out.println("Client: " + client.getName());
-		System.out.println("Site address: " + client.getAddress());
-		System.out.println("Surface :" + project.getSurface());
-
-		System.out.println();
-		System.out.println("--- Cost Details ---");
-		System.out.println();
-
-		System.out.println("1. Materials:");
-		System.out.println();
-
-		materials.forEach((name, material) -> {
-			double total = (material.getQuantity() * material.getUnitCost() * material.getQualityCoefficient())
-					+ material.getTransportCost();
-			String detail = String.format(
-					"- %s: €%.2f (quantity: %.2f m², unit cost: €%.2f/m², quality: %.1f, transport: €%.2f)", name,
-					total, material.getQuantity(), material.getUnitCost(), material.getQualityCoefficient(),
-					material.getTransportCost());
-			System.out.println(detail);
-			materialCost += total;
-		});
 		String text = String.format("€%.2f**", materialCost);
 		System.out.println("**Total cost of materials before VAT: " + text);
 		if (taxRate > 0)
@@ -187,18 +146,8 @@ public class ProjectController {
 		text = String.format("(%.2f%%) : €%.2f**", taxRate, materialCost);
 		System.out.println("**Total cost of materials after VAT " + text);
 
-		System.out.println();
-		System.out.println("2. Labors:");
-		System.out.println();
+		laborCost = LaborView.displayLabor(labors);
 
-		labors.forEach((name, labor) -> {
-			double total = labor.getHourlyRate() * labor.getHoursWorked() * labor.getWorkerProductivity();
-			String detail = String.format(
-					"- %s: €%.2f (hourly rate: €%.2f/h, hours worked: %.2f h, productivity: %.1f)", name, total,
-					labor.getHourlyRate(), labor.getHoursWorked(), labor.getWorkerProductivity());
-			System.out.println(detail);
-			laborCost += total;
-		});
 		text = String.format("€%.2f**", laborCost);
 		System.out.println("**Total labors cost before VAT: " + text);
 		if (taxRate > 0)
@@ -207,22 +156,61 @@ public class ProjectController {
 		text = String.format("(%.2f%%) : €%.2f**", taxRate, laborCost);
 		System.out.println("**Total labors cost after VAT " + text);
 
+		double costExcludingMargin = 0;
+		double marginCost = 0;
+
 		costExcludingMargin = laborCost + materialCost;
 		marginCost = margin > 0 ? costExcludingMargin * (margin / 100) : costExcludingMargin;
 		totalCost = marginCost + costExcludingMargin;
 
-		text = String.format("%.2f €", costExcludingMargin);
-		System.out.println();
-		System.out.println("3. Total cost before margin: " + text);
-		text = String.format("4. Profit margin (%.2f%%): €%.2f", margin, marginCost);
-		System.out.println(text);
-		text = String.format("**Coût total final du projet : %.2f €**", totalCost);
-		System.out.println(text);
+		CostCalculationView.displayFinalCost(costExcludingMargin, margin, totalCost, marginCost);
 
 		project.setProfitMargin(marginCost);
 		project.setTotalCost(totalCost);
-		Quote quote = new Quote();
-		quote.generate(project.getId(), totalCost);
+		new Quote().generate(project.getId(), totalCost);
+	}
+
+	private void displayText() {
+		System.out.println();
+		System.out.println("Calculation of the cost in progress...");
+		System.out.println();
+
+		System.out.println("--- Résultat du Calcul ---");
+		System.out.println();
+
+		ProjectView.displayDetails(project, client);
+
+		System.out.println();
+		System.out.println("--- Cost Details ---");
+		System.out.println();
+
+	}
+
+	private double getTax() {
+		double taxRate = -1;
+		boolean validator = Input.getConfirmation("Do you want to apply VAT to the project? (y/n)");
+		if (validator) {
+			taxRate = Input.getDouble("Vat Rate", "Enter the VAT percentage (%)", false).get();
+			while (taxRate < 0 || taxRate > 100) {
+				taxRate = Input.getDouble("Vat Rate", "Please enter a valid VAT percentage (0-100)", false).get();
+			}
+		}
+
+		return taxRate;
+
+	}
+
+	private double getMargin() {
+		double margin = -1;
+		boolean validator = Input.getConfirmation("Would you like to apply a profit margin to the project? (y/n)");
+		if (validator) {
+			margin = Input.getDouble("Profit Margin", "Enter the profit margin percentage (%)", false).get();
+			while (margin < 0 || margin > 100)
+				margin = Input
+						.getDouble("Profit Margin", "Please enter a valid profit margin percentage (0-100)", false)
+						.get();
+		}
+		return margin;
 	}
 
 	public void displayProjects() {
