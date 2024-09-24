@@ -167,6 +167,7 @@ public class ProjectController {
 
 		project.setProfitMargin(marginCost);
 		project.setTotalCost(totalCost);
+
 		new Quote().generate(project.getId(), totalCost);
 	}
 

@@ -7,19 +7,6 @@ import model.Material;
 public class MaterialView {
 	private static double materialCost = 0;
 
-	public static void addMaterial() {
-		System.out.print("Enter the material name: ");
-		// Input material name
-		System.out.print("Enter the quantity: ");
-		// Input quantity
-		System.out.print("Enter the unit cost (€/unit): ");
-		// Input unit cost
-		System.out.print("Enter the transport cost (€): ");
-		// Input transport cost
-		System.out.print("Enter the quality coefficient (1.0 = standard, > 1.0 = high quality): ");
-		// Input quality coefficient
-	}
-
 	public static double displayMaterial(HashMap<String, Material> materials) {
 		System.out.println("1. Materials:");
 		System.out.println();

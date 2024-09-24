@@ -8,11 +8,6 @@ public class Component {
 	private double taxRate;
 	private int projectId;
 
-	public double calculateCost() {
-		// Method body to be implemented
-		return 0.0;
-	}
-
 	public String getName() {
 		return name;
 	}
